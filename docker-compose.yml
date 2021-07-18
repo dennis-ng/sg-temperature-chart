@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  web:
+    build:
+      # Build an image from the Dockerfile in the current directory
+      context: .
+    image: temperature-app
+    container_name: temperature-app
+    ports:
+     - "${PORT:-5000}:5000"
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - PYTHONUNBUFFERED=1
+    command:
+      uvicorn app:app --host 0.0.0.0 --port 5000 --reload --log-level ${LOG_LEVEL:-debug}
+    depends_on:
+      - redis
+
+  worker:
+    image: temperature-app
+    command: celery -A tasks worker --loglevel=${CELERY_LOG_LEVEL:-INFO}
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - web
+      - redis
+
+  redis:
+    image: redis:6-alpine

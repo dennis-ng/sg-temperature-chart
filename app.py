@@ -17,7 +17,6 @@ async def generate_chart(request: Request):
         'chart_url': chart_url
     }
 
-
 @app.get("/chart/{id}", status_code=200, response_class=HTMLResponse)
 def get_chart(id: str, response: Response):
     result = AsyncResult(id)

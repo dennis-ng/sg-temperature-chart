@@ -18,7 +18,6 @@ class Test_Tasks(unittest.TestCase):
         assert mock_get_day_weather.call_count == 7
         mock_plot.assert_called_once()
 
-
     def test_get_weather_schema(self):
         chart = get_weather() # ValidationError if API schema changed
         assert chart.startswith('<html>')

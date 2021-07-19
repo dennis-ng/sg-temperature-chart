@@ -12,10 +12,10 @@ WEATHER_ENDPOINT = 'https://api.data.gov.sg/v1/environment/air-temperature'
 @app.task
 def get_weather() -> str:
     data = asyncio.run(temperature.get_past_week_data())
-    encoded = temperature.plot(data)
+    html_chart = temperature.plot(data)
     # Save to S3 and return the s3 url if you intend to keep it much longer.
     # However it doesn't really make sense and in fact we can just return
     # a cached chart using the truncated datetime of the request up to the
     # minute as the key instead of generating a new one, since the data
     # is not actually dynamic.
-    return encoded
+    return html_chart

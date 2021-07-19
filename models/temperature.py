@@ -2,7 +2,6 @@ import pandas as pd
 import io
 import plotly.express as px
 from datetime import datetime, date, timedelta
-import time
 import asyncio
 import httpx
 from httpx import Timeout
@@ -45,7 +44,7 @@ async def get_past_week_data() -> List[Dict]:
     data = await asyncio.gather(*task_list)
     return data
 
-def plot(data: List[Dict]):
+def plot(data: List[Dict]) -> str:
     dfs = []
     ListOfDailyTemperature(data=data) # Raises ValidationError
     for daily in data:
@@ -58,9 +57,8 @@ def plot(data: List[Dict]):
         df = pd.merge(df, metadata[['id', 'name']], left_on='station_id', right_on='id')
         dfs.append(df)
     df = pd.concat(dfs)
-    BUCKET = 'ai.dennis.weather.plot'
     with io.StringIO() as buffer:
         fig = px.line(df, x="timestamp", y="value", color='name')
         fig.write_html(buffer,include_plotlyjs='cdn', config={'scrollZoom': True})
-        encoded = buffer.getvalue()
-    return encoded
+        html_chart = buffer.getvalue()
+    return html_chart
